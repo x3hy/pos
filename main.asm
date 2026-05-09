@@ -4,6 +4,24 @@ bits 16
 
 %define ENDL 0x0D, 0x0A
 
+
+start:
+	; setup data segments
+	mov ax, 0
+	mov ds, ax
+	mov es, ax
+
+	; setup stack
+	mov ss, ax
+	mov sp, 0x7C00
+
+	; print startup message
+	mov si, msg_test
+	call puts
+
+	; exit
+	hlt
+
 ; prints a string to the screen
 ; takes ds:si pointers to a string
 puts:
@@ -27,23 +45,6 @@ puts:
 	pop ax
 	pop si
 	ret
-
-main:
-	; setup data segments
-	mov ax, 0
-	mov ds, ax
-	mov es, ax
-
-	; setup stack
-	mov ss, ax
-	mov sp, 0x7C00
-
-	; print startup message
-	mov si, msg_test
-	call puts
-
-	; exit
-	hlt
 
 .halt:
 	jmp .halt
