@@ -4,7 +4,7 @@ bits 16
 
 %define ENDL 0x0D, 0x0A
 
-
+section .text
 start:
 	; setup data segments
 	mov ax, 0
@@ -20,7 +20,10 @@ start:
 	call puts
 
 	; exit
+	cli
+.halt:
 	hlt
+	jmp .halt
 
 ; prints a string to the screen
 ; takes ds:si pointers to a string
@@ -46,8 +49,6 @@ puts:
 	pop si
 	ret
 
-.halt:
-	jmp .halt
 
 msg_test: db 'Waddup faggots!', ENDL, 0
 

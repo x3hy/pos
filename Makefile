@@ -12,6 +12,9 @@ $(BUILD_DIR)/pos.img: $(BUILD_DIR)/main.bin
 $(BUILD_DIR)/main.bin: main.asm
 	$(ASM) main.asm -f bin -o $(BUILD_DIR)/main.bin
 
+clean:
+	rm build/*
+
 run:
 	qemu-system-i386 -fda $(BUILD_DIR)/pos.img -display curses
 
