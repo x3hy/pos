@@ -1,8 +1,9 @@
 ASM=nasm
+ASM_ARGS= -i kernel/lib -f bin
 CC=cc
 BUILD_DIR=build
 
-all: floppy commit run
+all: clean floppy commit run
 
 # Create the floppy IMG file
 floppy: $(BUILD_DIR)/floppy.img
@@ -15,15 +16,12 @@ $(BUILD_DIR)/floppy.img: bootloader kernel
 # Bootloader
 bootloader: $(BUILD_DIR)/bootloader.bin
 $(BUILD_DIR)/bootloader.bin: always
-	$(ASM) kernel/boot/boot.asm -f bin -o $(BUILD_DIR)/bootloader.bin
+	$(ASM) $(ASM_ARGS) kernel/boot/boot.asm -o $(BUILD_DIR)/bootloader.bin
 
 # Kernel
 kernel: $(BUILD_DIR)/kernel.bin
 $(BUILD_DIR)/kernel.bin: always
-	$(ASM) kernel/main.asm -f bin -o $(BUILD_DIR)/kernel.bin
-
-$(BUILD_DIR)/main.bin: main.asm
-	$(ASM) main.asm -f bin -o $(BUILD_DIR)/main.bin
+	$(ASM) $(ASM_ARGS) kernel/main.asm -o $(BUILD_DIR)/kernel.bin
 
 always:
 	mkdir -p $(BUILD_DIR)
@@ -31,8 +29,8 @@ always:
 clean:
 	rm -rf $(BUILD_DIR)/*
 
-run:
-	qemu-system-i386 -fda $(BUILD_DIR)/pos.img -display curses
+run: $(BUILD_DIR)/floppy.img
+	qemu-system-i386 -fda $(BUILD_DIR)/floppy.img -display curses
 
 commit:
 	git add .
