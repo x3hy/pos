@@ -16,8 +16,10 @@ start:
 	mov es, ax
 
 	; setup stack
-	mov ss, ax
 	mov sp, 0x7C00
+
+	mov si, msg_test
+	call puts
 
 	mov [ebr_drive_number], dl
 	mov ax, 1
@@ -31,7 +33,11 @@ start:
 	hlt
 	jmp .halt
 
+
 %include "disk.asm"
 %include "std.asm"
+
+msg_test: db 'Hello World!', ENDL, 0
+
 times 510-($-$$) db 0
 dw 0xAA55
