@@ -36,4 +36,19 @@ reboot:
 	jmp 0FFFFh:0 ; Jump to the beginning of the bios
 	ret;
 
-%endif; ASM_STD_H
+; messages:
+msg_error_floppy: db 'Failed to read from disk', ENDL, 0
+
+wait_key_and_reboot:
+	call await_keypress
+	call reboot
+
+; called on floppy read error
+error_floppy:
+	mov si, msg_error_floppy
+	call puts
+	cli
+	call wait_key_and_reboot
+	hlt
+
+%endif
