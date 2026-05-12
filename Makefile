@@ -3,7 +3,7 @@ ASM_ARGS= -i kernel/lib -f bin
 CC=cc
 BUILD_DIR=build
 
-all: clean floppy commit run
+all: clean floppy commit
 
 # Create the floppy IMG file
 floppy: $(BUILD_DIR)/floppy.img
@@ -31,6 +31,9 @@ clean:
 
 run: $(BUILD_DIR)/floppy.img
 	qemu-system-i386 -fda $(BUILD_DIR)/floppy.img -display curses
+
+debug: $(BUILD_DIR)/floppy.img
+	bochs -f .bochs
 
 commit:
 	git add .
