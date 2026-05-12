@@ -25,4 +25,15 @@ puts:
 	pop ax
 	pop si
 	ret
+
+await_keypress:
+	mov ah, 0
+	int 16h
+	ret
+
+reboot:
+	cli
+	jmp 0FFFFh:0 ; Jump to the beginning of the bios
+	ret;
+
 %endif; ASM_STD_H
