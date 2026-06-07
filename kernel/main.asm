@@ -1,30 +1,45 @@
-; pOS boot ASM
-org 0x7C00
+org 0x0
 bits 16
 
-%include "std.asm"
 
-section .text
+%define ENDL 0x0D, 0x0A
+
+
 start:
-	; setup data segments
-	mov ax, 0
-	mov ds, ax
-	mov es, ax
+    ; print hello world message
+    mov si, msg_hello
+    call puts
 
-	; setup stack
-	mov ss, ax
-	mov sp, 0x7C00
-
-	; print startup message
-	mov si, msg_test
-	call puts
-	; exit
-	cli
 .halt:
-	hlt
-	jmp .halt
+    cli
+    hlt
 
-msg_test: db 'Hello World!', ENDL, 0
+;
+; Prints a string to the screen
+; Params:
+;   - ds:si points to string
+;
+puts:
+    ; save registers we will modify
+    push si
+    push ax
+    push bx
 
-times 510-($-$$) db 0
-dw 0xAA55
+.loop:
+    lodsb               ; loads next character in al
+    or al, al           ; verify if next character is null?
+    jz .done
+
+    mov ah, 0x0E        ; call bios interrupt
+    mov bh, 0           ; set page number to 0
+    int 0x10
+
+    jmp .loop
+
+.done:
+    pop bx
+    pop ax
+    pop si    
+    ret
+
+msg_hello: db 'Hello world from KERNEL!', ENDL, 0
