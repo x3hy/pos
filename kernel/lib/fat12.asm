@@ -13,7 +13,6 @@ bdb_sectors_per_track: dw 18
 bdb_heads: dw 2
 bdb_hidden_secrets: dd 0
 bdb_large_sector_count: dd 0
-
 ; extended boot record
 ebr_drive_number: db 0
 ebr_signature: db 29h

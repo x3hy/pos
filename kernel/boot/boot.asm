@@ -1,7 +1,5 @@
-; pOS boot ASM
 org 0x7C00
 bits 16
-
 
 jmp short start
 nop
@@ -18,9 +16,6 @@ start:
 	; setup stack
 	mov sp, 0x7C00
 
-	mov si, msg_test
-	call puts
-
 	mov [ebr_drive_number], dl
 	mov ax, 1
 	mov cl, 1
@@ -36,8 +31,6 @@ start:
 
 %include "disk.asm"
 %include "std.asm"
-
-msg_test: db 'Hello World!', ENDL, 0
 
 times 510-($-$$) db 0
 dw 0xAA55
