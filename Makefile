@@ -10,13 +10,20 @@ floppy: $(BUILD_DIR)/floppy.img
 $(BUILD_DIR)/floppy.img: bootloader kernel
 	dd if=/dev/zero of=$(BUILD_DIR)/floppy.img bs=512 count=2880
 	mkfs.fat -F 12 -n "NBOS" $(BUILD_DIR)/floppy.img
-	dd if=$(BUILD_DIR)/bootloader.bin of=$(BUILD_DIR)/floppy.img conv=notrunc
-	mcopy -i $(BUILD_DIR)/floppy.img $(BUILD_DIR)/kernel.bin "::kernel.bin"
+	dd if=$(BUILD_DIR)/stage1.bin of=$(BUILD_DIR)/floppy.img conv=notrunc
+	mcopy -i $(BUILD_DIR)/floppy.img $(BUILD_DIR)/stage2.bin "::stage2.bin"
+	mcopy -i $(BUILD_DIR)/floppy.img test.txt "::text.txt"
 
-# Bootloader
-bootloader: $(BUILD_DIR)/bootloader.bin
-$(BUILD_DIR)/bootloader.bin: always
-	$(ASM) $(ASM_ARGS) kernel/boot/boot.asm -o $(BUILD_DIR)/bootloader.bin
+# Bootloaders
+bootloader: $(BUILD_DIR)/stage1.bin  $(BUILD_DIR)/stage2.bin
+
+# Stage1
+$(BUILD_DIR)/stage1.bin: always
+	$(ASM) $(ASM_ARGS) kernel/boot/stage1.asm -o $(BUILD_DIR)/stage1.bin
+
+# Stage 2
+$(BUILD_DIR)/stage2.bin: always
+	$(ASM) $(ASM_ARGS) kernel/boot/stage2.asm -o $(BUILD_DIR)/stage2.bin
 
 # Kernel
 kernel: $(BUILD_DIR)/kernel.bin
@@ -31,9 +38,6 @@ clean:
 
 run: $(BUILD_DIR)/floppy.img
 	qemu-system-i386 -fda $(BUILD_DIR)/floppy.img -display curses
-
-debug: $(BUILD_DIR)/floppy.img
-	bochs -f .bochs
 
 commit:
 	git add .
